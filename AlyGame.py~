@@ -1,0 +1,45 @@
+#use the dummy video driver from os
+import os
+os.environ["SDL_VIDEODRIVER"] = 'dummy'
+os.environ['SDL_AUDIODRIVER'] = 'dsp'
+
+#Using the pygame module to get started
+import pygame
+
+#define the main function
+def main():
+
+
+    #initialize the pygame module
+    pygame.init()
+
+    #Load and set the logo for the game
+    #logo = pygame.image.load("logo32x32.png")
+    #pygame.display.set_icon(logo)
+    pygame.display.set_caption("minimal program")
+
+    #create a surface on screen that has a given m x n pixel size
+    screen = pygame.display.set_mode((200,200))
+    #screen = pygame.display.set_mode((240 x 180)) what the demo uses
+
+    #define a variable to control the main loop
+    running = True #needs a Boolean argument to run the loop
+
+    # main loop
+    while running: #infinite loop
+
+        #event handling, gets all events from the event queue
+        for event in pygame.event.get():
+
+            #only do something if the event is of type QUIT because that's all this game is, a sample
+            if event.type == pygame.QUIT:
+
+                #change the calue to False, exit the infinite loop
+                running = False
+
+
+#Run the main function only if this module is the main script
+# so if it is imported, nothing happens unless the function is called
+if __name__ == "__main__":
+    main()
+        
