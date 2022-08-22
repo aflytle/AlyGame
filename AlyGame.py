@@ -37,6 +37,7 @@ def game_main():
     player_2 = pygame.sprite.GroupSingle()
     player_2.add(Class_file.Player())
 
+
     # obstacles
     obstacles = pygame.sprite.Group()
    
@@ -47,6 +48,12 @@ def game_main():
     pygame.time.set_timer(OBSTACLE_TIMER_2, 5000)
 
 
+    #retrievables
+    retrievables = pygame.sprite.Group()
+    OBSTACLE_TIMER_3 = pygame.USEREVENT + 3
+    pygame.time.set_timer(OBSTACLE_TIMER_3, 6500)
+
+    
 
     #Name of the game
     pygame.display.set_caption("Saving Samhain")
@@ -79,8 +86,8 @@ def game_main():
     #collision objects
     collision_text = pygame.image.load('Ouch.png').convert_alpha()
     collision_textRect = collision_text.get_rect(center = (576,324))
-    bonk_surf = pygame.image.load('Bonk.png').convert_alpha()
-    bonk_rect = bonk_surf.get_rect(center = (0,0))
+    #bonk_surf = pygame.image.load('Bonk.png').convert_alpha()
+    #bonk_rect = bonk_surf.get_rect(center = (0,0))
 
 
     #level up object
@@ -110,6 +117,7 @@ def game_main():
     houseOne_rect = houseOne_surface.get_rect(midbottom = (1000,648))
     #house_x = 1000 #initial x position = 1000 - 500 = 500
     
+
     #lamp objects
     lamp1_surf = pygame.image.load('lamp.png').convert_alpha()
     lamp1_rect = lamp1_surf.get_rect(midbottom = (1152,665))
@@ -118,39 +126,28 @@ def game_main():
 
 
 
-    # Retrievables
-    #book objects
-    book_surf = pygame.image.load('Book.png').convert_alpha()
-    book_rect = book_surf.get_rect(center = (1300, random.randint(0,600)))
-    book_rect.inflate(-30,-30)
-
-    #cat objects
-    cat_surf = pygame.image.load('kitty.png').convert_alpha()
-    cat_rect = cat_surf.get_rect(midbottom = (2000, 665))
-
-
 
     #Obstacles
     #pumpkin objects
-    pump1_surf = pygame.image.load('pumpkin2.png').convert_alpha()
-    pump1_rect = pump1_surf.get_rect(midbottom = (1300,665))
+    #pump1_surf = pygame.image.load('pumpkin2.png').convert_alpha()
+    #pump1_rect = pump1_surf.get_rect(midbottom = (1300,665))
     #pump1_rect.inflate(150,-50)
 
     #bat objects
-    bat_surf = pygame.image.load('bat.png').convert_alpha()
-    bat_rect = bat_surf.get_rect(midbottom = (1500, random.randint(100,400)))
+    #bat_surf = pygame.image.load('bat.png').convert_alpha()
+    #bat_rect = bat_surf.get_rect(midbottom = (1500, random.randint(100,400)))
 
 
 
     #character surface
-    player_fly_1 = pygame.image.load('AlyCharacter1.png')
-    player_fly_2 = pygame.image.load('AlyCharacter2.png')#.convert()
-    player_fly = [player_fly_1, player_fly_2]
-    player_index = 0
-    player_sprint = pygame.image.load('AlyCharacter3.png')
+    #player_fly_1 = pygame.image.load('AlyCharacter1.png')
+    #player_fly_2 = pygame.image.load('AlyCharacter2.png')#.convert()
+    #player_fly = [player_fly_1, player_fly_2]
+    #player_index = 0
+    #player_sprint = pygame.image.load('AlyCharacter3.png')
 
-    player_surf = player_fly[player_index]
-    player_rect = player_surf.get_rect(height = 100, width = 200, topleft = (80,500)) #create player
+    #player_surf = player_fly[player_index]
+    #player_rect = player_surf.get_rect(height = 100, width = 200, topleft = (80,500)) #create player
     
     #player_rect.inflate(400,-400)
     player_yvel = 0
@@ -179,7 +176,7 @@ def game_main():
 
     maxvel = 10
     minvel = 1
-    game_active = True 
+    game_active = True
 
 
 
@@ -215,6 +212,9 @@ def game_main():
             
             if event.type == OBSTACLE_TIMER_2:
                 obstacles.add(Class_file.Obstacle('bat'))
+            
+            if event.type == OBSTACLE_TIMER_3:
+                retrievables.add(Class_file.Retrievable(random.choice(['book', 'book', 'book', 'cat'])))
 
 
             #Active game commands
@@ -248,8 +248,8 @@ def game_main():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         game_active = True
-                        pump1_rect.left = 1200
-                        bat_rect.left = 1300
+                        #pump1_rect.left = 1200
+                        #bat_rect.left = 1300
 
                             
                 
@@ -262,26 +262,34 @@ def game_main():
             screen.blit(houseOne_surface,houseOne_rect) #0, LENGTH - HOUSE HEIGHT
             screen.blit(lamp1_surf,lamp1_rect)
             screen.blit(lamp2_surf, lamp2_rect)
-            #player_animation()
-            #screen.blit(player_surf,player_rect)
+
+
+            #screen.blit(player_surf,player_rect)  
             player_2.draw(screen)
             player_2.update()
+
             obstacles.draw(screen)
             obstacles.update()
+
+            retrievables.draw(screen)
+            retrievables.update()
+            
+            
             pygame.draw.rect(screen,'Grey',score_rect,width = 2,border_radius=5)
-            screen.blit(score_text, score_rect)
-            screen.blit(book_surf, book_rect)
-            #screen.blit(pump1_surf,pump1_rect)
-            #screen.blit(bat_surf,bat_rect)
-            screen.blit(cat_surf, cat_rect)
             score_time = pygame.time.get_ticks()//1000
             score_text = font.render(f"Books: {score_books}     Cats: {score_cats}     Time: {score_time}", False, 'Purple')
             score_rect = score_text.get_rect(center = (576,100))
+            screen.blit(score_text, score_rect)
+            
+            #update scores
+            score_time = pygame.time.get_ticks()//1000
+            #score_text = font.render(f"Books: {score_books}     Cats: {score_cats}     Time: {score_time}", False, 'Purple')
+            #score_rect = score_text.get_rect(center = (576,100))
 
             
             # Level completion
             total_score = score_books*5 + score_cats*20 + score_time
-            if total_score >= 200:
+            if total_score >= 120:
                 #end of game animation:
                 pygame.time.wait(1000)
                 screen.blit(level_up_surf, level_up_rect)
@@ -306,70 +314,9 @@ def game_main():
             if lamp2_rect.right < -200:
                 lamp2_rect.left = 1200
 
-            book_rect.x -= (3/5)*(player_xvel + minvel)
-            if book_rect.right < -400:
-                book_rect.left = 1200
-                book_rect.bottom = random.randint(50,600)
 
-            cat_rect.x -= 2*(player_xvel + minvel)
-            if cat_rect.right < -400:
-                cat_rect.left = 4800
 
-            pump1_rect.x -= (player_xvel + minvel)
-            if pump1_rect.right < -100:
-                pump1_rect.left = 1300
-
-            bat_rect.x -= (6/5)*(player_xvel + minvel)
-            bat_rect.y = 100*math.sin(pygame.time.get_ticks()/200) + 50
-            if bat_rect.right < -100:
-                bat_rect.left = 1400
-            
-            #game part: collisions and controls
-            #print(player_rect.center)
-            if player_rect.collidepoint(pump1_rect.center): #or player_rect.colliderect(lamp2_rect):
-                #screen.blit(collision_animation,collisionRectangle)
-                screen.blit(collision_text, collision_textRect)
-                bonk_rect = bonk_surf.get_rect(center = pump1_rect.center)
-                screen.blit(bonk_surf, bonk_rect)
-                bonks += 1
-                total_score -= 5 #pumpkin collision score modifier
-                pygame.display.update()
-                pygame.time.wait(250)
-                game_active = False
-            
-            if player_rect.collidepoint(bat_rect.center): #or player_rect.colliderect(lamp2_rect):
-                #screen.blit(collision_animation,collisionRectangle)
-                screen.blit(collision_text, collision_textRect)
-                bonk_rect = bonk_surf.get_rect(center = bat_rect.center)
-                screen.blit(bonk_surf, bonk_rect)
-                bonks += 1
-                total_score -= 3 #pumpkin collision score modifier
-                pygame.display.update()
-                pygame.time.wait(250)
-                game_active = False
-
-            if player_rect.collidepoint(book_rect.center):
-                score_books += 1
-                book_rect.x = 2000
-                book_rect.bottom = random.randint(50,600)
-                score_text = font.render(f"Books: {score_books}     Cats: {score_cats}     Time: {score_time}", False, 'Purple')
-                score_rect = score_text.get_rect(center = (576,100))
-                #screen.blit(book name and image)
-
-            if player_rect.collidepoint(cat_rect.center):
-                score_cats += 1
-                cat_rect.x = 2000
-                score_text = font.render(f"Books: {score_books}     Cats: {score_cats}     Time: {score_time}", False, 'Purple')    
-                score_rect = score_text.get_rect(center = (576,100))
-            
-
-            if player_rect.bottom >= 648:
-                player_rect.bottom = 648
-            if player_rect.top <= 0:
-                player_rect.top = 0
-
-            #player_yvel += player_yaccel
-            player_rect.y += player_yvel
+           
 
             minvel = 2*(score_time//10 + 1)
             maxvel = 2*(score_time//10 + 10)
@@ -381,9 +328,28 @@ def game_main():
             pygame.display.update()
             #step time at 60fps
             clock.tick(60)
+            
+            wrecks = pygame.sprite.spritecollide(player_2.sprite, obstacles, False)
+            if wrecks != []:
+                if wrecks[0].collisions == True:
+                    bonks += 1
+                wrecks[0].death_animation()
+                if (bonks%3) == 0:
+                    screen.blit(collision_text, collision_textRect)
+                    pygame.display.update()
+                    pygame.time.wait(250)
+                    wrecks[0].kill()
+                # add lives here
 
-            #if spider_rect.colliderect(player_rect):
-                #game_active = False
+            retrievals = pygame.sprite.spritecollide(player_2.sprite, retrievables, False)
+            if retrievals != []:
+                if retrievals[0].type == 'book' and retrievals[0].collisions == True:
+                    score_books += 1
+                elif retrievals[0].type == 'cat' and retrievals[0].collisions == True:
+                    score_cats += 1
+                retrievals[0].death_animation()
+
+
 
 #Run the main function only if this module is the main script
 # so if it is imported, nothing happens unless the function is called

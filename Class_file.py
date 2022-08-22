@@ -2,6 +2,8 @@ import pygame
 from sys import exit
 import random
 import math
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
        
@@ -20,6 +22,8 @@ class Player(pygame.sprite.Sprite):
         
         self.xpos = 0
         self.yvel = 0
+        #self.sprint_sound = pygame.mixer.Sound('')
+
 
     def player_input(self):
         keys = pygame.key.get_pressed()
@@ -74,7 +78,11 @@ class Obstacle(pygame.sprite.Sprite):
     def __init__(self,type):
         
         super().__init__()
+        
+        self.type = type
         self.xvel = 0
+        self.bonk_image = pygame.image.load('Bonk.png').convert_alpha()
+        self.collisions = True
 
         if type == 'pumpkin':
             pump1 = pygame.image.load('pumpkin2.png').convert_alpha()
@@ -98,16 +106,92 @@ class Obstacle(pygame.sprite.Sprite):
         self.animation_index = 0
         self.image = self.frames[self.animation_index]
         self.rect = self.image.get_rect(midbottom = (random.randint(1200,1400),y_pos))
-
     def animation_state(self):
+        #self.bonk_image = pygame.image.load('Bonk.png').convert_alpha()
         self.animation_index += self.animation_inc
         if self.animation_index >= len(self.frames):
             self.animation_index = 0
-        self.image = self.frames[int(self.animation_index)]
+        if self.image == self.bonk_image:
+            self.image = self.bonk_image
+        else:    
+            self.image = self.frames[int(self.animation_index)]
+
+    def destroy(self):
+        if self.rect.right <= -100:
+            self.kill()
+    
+    def death_animation(self):
+        self.image = self.bonk_image
+        self.collisions = False
 
     def update(self):
         self.animation_state()
         self.rect.x -= self.xvel
         self.rect.y += self.yvel
+        self.destroy()
 
+
+
+class Retrievable(pygame.sprite.Sprite):
+    def __init__(self,type):
+        
+        super().__init__()
+        
+        self.xvel = 0
+        self.type = type
+        self.collisions = True
+
+        if type == 'book':
+            book1 = pygame.image.load('Book1.png').convert_alpha()
+            book2 = pygame.image.load('Book2.png').convert_alpha()
+            self.frames = [book1,book2]
+            y_pos = random.randint(50,610)
+            self.yvel = 0
+            self.xvel = 5
+            self.animation_inc = .08
+            self.bonk_image = pygame.image.load('book_bonk.png').convert_alpha()
+        
+        elif type == 'cat':
+            cat1 = pygame.image.load('cat1.png').convert_alpha()
+            cat2 = pygame.image.load('cat2.png').convert_alpha()
+            self.frames = [cat1,cat2]
+            y_pos = 550
+            self.yvel = 0
+            self.xvel = 10
+            self.animation_inc = .05
+            self.bonk_image = pygame.image.load('cat_bonk.png').convert_alpha()
+
+
+        self.animation_index = 0
+        self.image = self.frames[self.animation_index]
+        self.rect = self.image.get_rect(midbottom = (random.randint(1200,1400),y_pos))
+
+    def animation_state(self):
+        #self.bonk_image = pygame.image.load('Bonk.png').convert_alpha()
+        self.animation_index += self.animation_inc
+        if self.animation_index >= len(self.frames):
+            self.animation_index = 0
+        if self.image == self.bonk_image:
+            self.image = self.bonk_image
+        else:    
+            self.image = self.frames[int(self.animation_index)]
+
+    def destroy(self):
+        if self.rect.right <= -100:
+            self.kill()
+    
+    def death_animation(self):
+        self.image = self.bonk_image
+        self.xvel = .5
+        self.yvel = -5
+        self.collisions = False
+
+        
+        
+
+    def update(self):
+        self.animation_state()
+        self.rect.x -= self.xvel
+        self.rect.y += self.yvel
+        self.destroy()
 
