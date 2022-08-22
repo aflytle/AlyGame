@@ -10,6 +10,7 @@ from pygame.locals import*
 #import system access
 import sys
 import random
+import Class_file
 #import numpy as np
 
 
@@ -18,24 +19,44 @@ import random
 #    score_time = pygame.time.get_ticks()
 #    score_text = font.render(f"Books = {score_books}     Cats = {score_cats}    Time = {score_time}", False, 'Purple')
 #    score_rect = score_text.get_rect(center = (576,100))
-    
+
 
 #define the main function
 def game_main():
 
 
+  
+
     #initialize the pygame module
     pygame.init()
 
-    #Load and set the logo for the game
-    #logo = pygame.image.load("Test_Image.png")
-    #pygame.display.set_icon(logo)
-    pygame.display.set_caption("minimal program")
+
+
+    # Sprite Groups
+    # players
+    player_2 = pygame.sprite.GroupSingle()
+    player_2.add(Class_file.Player())
+
+    # obstacles
+    obstacles = pygame.sprite.Group()
+   
+    #obstacles.add() event setup
+    OBSTACLE_TIMER_1 = pygame.USEREVENT + 1
+    OBSTACLE_TIMER_2 = pygame.USEREVENT + 2
+    pygame.time.set_timer(OBSTACLE_TIMER_1, 3000)
+    pygame.time.set_timer(OBSTACLE_TIMER_2, 5000)
+
+
+
+    #Name of the game
+    pygame.display.set_caption("Saving Samhain")
 
     #color palette
     white = (255, 255, 255)
     green = (0, 255, 0)
     blue = (0, 0, 128)
+
+
 
     #create a surface on screen that has a given m x n pixel size
     screen_width = 1152 #background size
@@ -51,6 +72,9 @@ def game_main():
     pause_text = font.render('Paused', True, green, blue)
     pause_textRect = pause_text.get_rect()
     pause_textRect.center = (textX // 2, textY // 2)
+
+
+
 
     #collision objects
     collision_text = pygame.image.load('Ouch.png').convert_alpha()
@@ -77,6 +101,7 @@ def game_main():
 
 
 
+    # Background
     #Background surface: size = 1152 x 648
     background_surface = pygame.image.load('AlyGameBackGround.png').convert()#convert speeds this up
 
@@ -91,6 +116,9 @@ def game_main():
     lamp2_surf = pygame.image.load('lamp.png').convert_alpha()
     lamp2_rect = lamp2_surf.get_rect(midbottom = (395,665))
 
+
+
+    # Retrievables
     #book objects
     book_surf = pygame.image.load('Book.png').convert_alpha()
     book_rect = book_surf.get_rect(center = (1300, random.randint(0,600)))
@@ -100,6 +128,9 @@ def game_main():
     cat_surf = pygame.image.load('kitty.png').convert_alpha()
     cat_rect = cat_surf.get_rect(midbottom = (2000, 665))
 
+
+
+    #Obstacles
     #pumpkin objects
     pump1_surf = pygame.image.load('pumpkin2.png').convert_alpha()
     pump1_rect = pump1_surf.get_rect(midbottom = (1300,665))
@@ -109,19 +140,24 @@ def game_main():
     bat_surf = pygame.image.load('bat.png').convert_alpha()
     bat_rect = bat_surf.get_rect(midbottom = (1500, random.randint(100,400)))
 
+
+
     #character surface
     player_fly_1 = pygame.image.load('AlyCharacter1.png')
-    #player_fly_2 = pygame.image.load('AlyCharacter2.png')#.convert()
-    #player_fly = [player_fly_1, player_fly_2]
-    #player_sprint = 
-    player_rect = player_fly_1.get_rect(height = 100, width = 200, topleft = (80,500)) #create player
+    player_fly_2 = pygame.image.load('AlyCharacter2.png')#.convert()
+    player_fly = [player_fly_1, player_fly_2]
+    player_index = 0
+    player_sprint = pygame.image.load('AlyCharacter3.png')
+
+    player_surf = player_fly[player_index]
+    player_rect = player_surf.get_rect(height = 100, width = 200, topleft = (80,500)) #create player
     
     #player_rect.inflate(400,-400)
     player_yvel = 0
-    player_yaccel = 0
     player_xvel = 0
-    player_xaccel = 0
     #object box/rectangle
+
+
 
     #testing out the blit function: blit(imagename,location)
     #screen.blit(logo, (50,50))
@@ -145,10 +181,14 @@ def game_main():
     minvel = 1
     game_active = True 
 
+
+
     # main loop
     while running: #infinite loop
        
-        
+        current_time = ...
+        button_press_time = ...
+
 
 
         #reset motion mechanics
@@ -161,12 +201,23 @@ def game_main():
         #event handling, gets all events from the event queue
         for event in pygame.event.get():
 
-            #only do something if the event is of type QUIT because that's all this game is, a sample
+            #Game Exit
             if event.type == pygame.QUIT:
 
                 #change the calue to False, exit the infinite loop
                 running = False
                 #sys.exit()
+
+
+            #Obstacle timer constructions
+            if event.type == OBSTACLE_TIMER_1:
+                obstacles.add(Class_file.Obstacle('pumpkin'))
+            
+            if event.type == OBSTACLE_TIMER_2:
+                obstacles.add(Class_file.Obstacle('bat'))
+
+
+            #Active game commands
             if game_active:
 
                 if event.type == pygame.KEYDOWN:
@@ -177,14 +228,16 @@ def game_main():
                         player_yvel = 12
                     
                     if event.key == pygame.K_RIGHT:
-                        if player_xvel >= maxvel:
-                            player_xvel = maxvel
+                        if player_xvel >= 10:
+                            player_xvel = 10
                         else: player_xvel += 2
 
                     elif event.key == pygame.K_LEFT:
-                        if player_xvel <= minvel:
-                            player_xvel = minvel
+                        if player_xvel <= 0:
+                            player_xvel = 0
                         else: player_xvel -= 2 
+
+
 
 
                 if event.type == pygame.KEYUP:
@@ -209,12 +262,17 @@ def game_main():
             screen.blit(houseOne_surface,houseOne_rect) #0, LENGTH - HOUSE HEIGHT
             screen.blit(lamp1_surf,lamp1_rect)
             screen.blit(lamp2_surf, lamp2_rect)
-            screen.blit(player_fly_1,player_rect)
+            #player_animation()
+            #screen.blit(player_surf,player_rect)
+            player_2.draw(screen)
+            player_2.update()
+            obstacles.draw(screen)
+            obstacles.update()
             pygame.draw.rect(screen,'Grey',score_rect,width = 2,border_radius=5)
             screen.blit(score_text, score_rect)
             screen.blit(book_surf, book_rect)
-            screen.blit(pump1_surf,pump1_rect)
-            screen.blit(bat_surf,bat_rect)
+            #screen.blit(pump1_surf,pump1_rect)
+            #screen.blit(bat_surf,bat_rect)
             screen.blit(cat_surf, cat_rect)
             score_time = pygame.time.get_ticks()//1000
             score_text = font.render(f"Books: {score_books}     Cats: {score_cats}     Time: {score_time}", False, 'Purple')
@@ -236,32 +294,32 @@ def game_main():
                 #continue
 
             #animated portion of background
-            houseOne_rect.x -= player_xvel
+            houseOne_rect.x -= (player_xvel + minvel)
             if houseOne_rect.right < -350:
                 houseOne_rect.left = 1100 #loop the house position
             
-            lamp1_rect.x -= (7/5)*player_xvel
+            lamp1_rect.x -= (7/5)*(player_xvel + minvel)
             if lamp1_rect.right < -200:
                 lamp1_rect.left = 1200
             
-            lamp2_rect.x -= (7/5)*player_xvel
+            lamp2_rect.x -= (7/5)*(player_xvel + minvel)
             if lamp2_rect.right < -200:
                 lamp2_rect.left = 1200
 
-            book_rect.x -= (3/5)*player_xvel
+            book_rect.x -= (3/5)*(player_xvel + minvel)
             if book_rect.right < -400:
                 book_rect.left = 1200
                 book_rect.bottom = random.randint(50,600)
 
-            cat_rect.x -= 3*player_xvel
+            cat_rect.x -= 2*(player_xvel + minvel)
             if cat_rect.right < -400:
                 cat_rect.left = 4800
 
-            pump1_rect.x -= player_xvel
+            pump1_rect.x -= (player_xvel + minvel)
             if pump1_rect.right < -100:
                 pump1_rect.left = 1300
 
-            bat_rect.x -= (6/5)*player_xvel
+            bat_rect.x -= (6/5)*(player_xvel + minvel)
             bat_rect.y = 100*math.sin(pygame.time.get_ticks()/200) + 50
             if bat_rect.right < -100:
                 bat_rect.left = 1400
@@ -305,16 +363,16 @@ def game_main():
                 score_rect = score_text.get_rect(center = (576,100))
             
 
-            if player_rect.bottom >= 1248:
-                player_rect.bottom = 1248
+            if player_rect.bottom >= 648:
+                player_rect.bottom = 648
             if player_rect.top <= 0:
                 player_rect.top = 0
 
             #player_yvel += player_yaccel
             player_rect.y += player_yvel
 
-            minvel = score_time//10 + 1
-            maxvel = score_time//10 + 10
+            minvel = 2*(score_time//10 + 1)
+            maxvel = 2*(score_time//10 + 10)
 
             #book score
             #if 
