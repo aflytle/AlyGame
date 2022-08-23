@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
         #player_rect = player_surf.get_rect(height = 100, width = 200, topleft = (80,500)) #create player
  
         self.image = self.player_fly[self.player_index]
-        self.rect = self.image.get_rect(height = 100, width = 200, topleft = (280,500))
+        self.rect = self.image.get_rect(height = 100, width = 200, topleft = (80,500))
         
         self.xpos = 0
         self.yvel = 0
@@ -155,7 +155,7 @@ class Retrievable(pygame.sprite.Sprite):
             cat1 = pygame.image.load('cat1.png').convert_alpha()
             cat2 = pygame.image.load('cat2.png').convert_alpha()
             self.frames = [cat1,cat2]
-            y_pos = 550
+            y_pos = 652
             self.yvel = 0
             self.xvel = 10
             self.animation_inc = .05
@@ -195,3 +195,35 @@ class Retrievable(pygame.sprite.Sprite):
         self.rect.y += self.yvel
         self.destroy()
 
+
+
+
+class Button():
+    
+    def __init__(self, x, y, image, scale):
+        width = image.get_width()
+        height = image.get_height()
+        self.x = x
+        self.y = y
+        self.image = pygame.transform.scale(image, (int(width*scale), int(height*scale)))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x,y)
+        self.clicked = False
+    
+    def draw(self, surface):
+        
+        action = False
+
+        pos = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clicked == True
+                action = True
+
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+        surface.blit(self.image, (self.x, self.y))
+
+        return action
