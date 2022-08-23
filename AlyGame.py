@@ -76,9 +76,30 @@ def game_main():
     textX = 400
     textY = 400
     font = pygame.font.Font('freesansbold.ttf', 32)
-    pause_text = font.render('Paused', True, green, blue)
-    pause_textRect = pause_text.get_rect()
-    pause_textRect.center = (textX // 2, textY // 2)
+
+
+    #pause menu
+    menu_font = pygame.font.SysFont("arial", 40)
+    
+    def pause_text(text,font,text_col,x,y):
+        img = font.render(text, True, text_col)
+        #game_active = False
+        screen.fill((0,205,0))
+        screen.blit(img, (x,y))
+        pygame.display.flip()
+        
+
+
+    #Home screen items
+    #play button
+    play_button = Class_file.Button(575,375,pygame.image.load("play_button.png").convert_alpha(),1)
+    title_men1 = pygame.image.load("title_text_1.png").convert_alpha()
+    title_men1_rect = title_men1.get_rect(topleft = (3,25))
+    title_men2 = pygame.image.load("title_text_2.png").convert_alpha()
+    title_men2_rect = title_men2.get_rect(topleft = (425,220))
+    control_men = pygame.image.load("Home_controls_and_values.png").convert_alpha()
+    control_men_rect = control_men.get_rect(topleft = (3, 250))
+
 
 
 
@@ -127,28 +148,9 @@ def game_main():
 
 
 
-    #Obstacles
-    #pumpkin objects
-    #pump1_surf = pygame.image.load('pumpkin2.png').convert_alpha()
-    #pump1_rect = pump1_surf.get_rect(midbottom = (1300,665))
-    #pump1_rect.inflate(150,-50)
-
-    #bat objects
-    #bat_surf = pygame.image.load('bat.png').convert_alpha()
-    #bat_rect = bat_surf.get_rect(midbottom = (1500, random.randint(100,400)))
 
 
 
-    #character surface
-    #player_fly_1 = pygame.image.load('AlyCharacter1.png')
-    #player_fly_2 = pygame.image.load('AlyCharacter2.png')#.convert()
-    #player_fly = [player_fly_1, player_fly_2]
-    #player_index = 0
-    #player_sprint = pygame.image.load('AlyCharacter3.png')
-
-    #player_surf = player_fly[player_index]
-    #player_rect = player_surf.get_rect(height = 100, width = 200, topleft = (80,500)) #create player
-    
     #player_rect.inflate(400,-400)
     player_yvel = 0
     player_xvel = 0
@@ -176,20 +178,48 @@ def game_main():
 
     maxvel = 10
     minvel = 1
-    game_active = True
+
+    #game variables
+    #idea board:
+    # auto to start menu (level 0)
+    # go from start menu to level 1
+    # etc.
+    # If game_paused == 1:
+    # game_active = 0, and game_active runs the levels,
+    #while game_paused runs the pause function
+    game_active = 0 #game key: 0 = open, 1 = pause, 2 = end game, 3 = level 1,... 
+    game_paused = False
+
 
 
 
     # main loop
     while running: #infinite loop
        
-        current_time = ...
-        button_press_time = ...
+
+        if game_active == 0:
+
+            if game_paused == False:
+
+                screen.blit(title_men1,title_men1_rect)# Title
+                screen.blit(title_men2, title_men2_rect)
+                screen.blit(control_men, control_men_rect)# controls
+                click = play_button.draw(screen)
+                if click == True:
+                    game_active = True
+                pygame.display.flip()
+            
+            #else:
+#
+ #               pause_text("Paused", font, (0,0,0), 576, 300) 
+  #              game_paused = True
+   #             game_active = 0
+    #            for event i
 
 
 
-        #reset motion mechanics
-        #player_yvel = 0
+
+
 
 
 
@@ -206,19 +236,8 @@ def game_main():
                 #sys.exit()
 
 
-            #Obstacle timer constructions
-            if event.type == OBSTACLE_TIMER_1:
-                obstacles.add(Class_file.Obstacle('pumpkin'))
-            
-            if event.type == OBSTACLE_TIMER_2:
-                obstacles.add(Class_file.Obstacle('bat'))
-            
-            if event.type == OBSTACLE_TIMER_3:
-                retrievables.add(Class_file.Retrievable(random.choice(['book', 'book', 'book', 'cat'])))
-
-
             #Active game commands
-            if game_active:
+            if game_active == 1:
 
                 if event.type == pygame.KEYDOWN:
                     #if event.key == pygame.K_SPACE:
@@ -236,6 +255,23 @@ def game_main():
                         if player_xvel <= 0:
                             player_xvel = 0
                         else: player_xvel -= 2 
+
+                    #elif event.key == pygame.K_p:
+                     #   pause_text("Paused", font, (0,0,0), 576, 300) 
+                        #game_paused = True
+                        #game_active = (game_active + 1)%2  
+
+                                #Obstacle timer constructions
+                
+                if event.type == OBSTACLE_TIMER_1:
+                    obstacles.add(Class_file.Obstacle('pumpkin'))
+            
+                if event.type == OBSTACLE_TIMER_2:
+                    obstacles.add(Class_file.Obstacle('bat'))
+            
+                if event.type == OBSTACLE_TIMER_3:
+                    retrievables.add(Class_file.Retrievable(random.choice(['book', 'book', 'book', 'cat'])))  
+
 
 
 
@@ -255,7 +291,7 @@ def game_main():
                 
 
 
-        if game_active:
+        if game_active == 1:
             #display objects in order from back to front
             #display_score(score_text = )
             screen.blit(background_surface,(0,0))
@@ -320,6 +356,11 @@ def game_main():
 
             minvel = 2*(score_time//10 + 1)
             maxvel = 2*(score_time//10 + 10)
+            
+            for ret in retrievables:
+                ret.xvel += minvel/50
+            for obs in obstacles:
+                obs.xvel += minvel/50
 
             #book score
             #if 
