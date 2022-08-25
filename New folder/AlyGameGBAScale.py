@@ -68,7 +68,7 @@ def game_main():
     #create a surface on screen that has a given m x n pixel size
     screen_width = 240 #background size
     screen_length = 160 #background size
-    screen = pygame.display.set_mode((screen_width, screen_length))
+    screen = pygame.display.set_mode((screen_width, screen_length), RESIZABLE)
     #screen = pygame.display.set_mode((240, 180)) #what the demo uses
     
     #text setup
@@ -134,18 +134,24 @@ def game_main():
     background_surface = pygame.image.load('AlyGameBackGroundGBA.png').convert()#convert speeds this up
 
     #House object for animation: size = 500 x 500
-    houseOne_surface = pygame.image.load('House1GBA.png').convert_alpha()#only convert background
-    houseOne_rect = houseOne_surface.get_rect(midbottom = (200,160))
+    #houseOne_surface = pygame.image.load('House1GBA.png').convert_alpha()#only convert background
+    #houseOne_rect = houseOne_surface.get_rect(midbottom = (200,160))
     #house_x = 1000 #initial x position = 1000 - 500 = 500
     
 
     #lamp objects
-    lamp1_surf = pygame.image.load('lampGBA.png').convert_alpha()
-    lamp1_rect = lamp1_surf.get_rect(midbottom = (240,160))
-    lamp2_surf = pygame.image.load('lampGBA.png').convert_alpha()
-    lamp2_rect = lamp2_surf.get_rect(midbottom = (120,1600))
+    #lamp1_surf = pygame.image.load('lampGBA.png').convert_alpha()
+    #lamp1_rect = lamp1_surf.get_rect(midbottom = (240,160))
+    #lamp2_surf = pygame.image.load('lampGBA.png').convert_alpha()
+    #lamp2_rect = lamp2_surf.get_rect(midbottom = (120,1600))
 
+    Background_Buttons = pygame.sprite.Group()
+    BACKGROUND_TIMER_1 = pygame.USEREVENT + 4
+    BACKGROUND_TIMER_2 = pygame.USEREVENT + 5
+    pygame.time.set_timer(BACKGROUND_TIMER_1, 4000)
+    pygame.time.set_timer(BACKGROUND_TIMER_2, 1500)
 
+    #Class_fileGBA.Backdrop_Button()
 
 
 
@@ -162,12 +168,6 @@ def game_main():
     #screen.blit(logo, (50,50))
     pygame.display.flip()
     
-    # define the position of the logo
-    xpos = 200
-    ypos = 200
-    # how many pixels we move the logo each frame
-    step_x = 10
-    step_y = 10
 
     #define a variable to control the main loop
     running = True #needs a Boolean argument to run the loop
@@ -177,7 +177,7 @@ def game_main():
     timer = 0
 
     maxvel = 10
-    minvel = 1
+    minvel = 0
 
     #game variables
     #idea board:
@@ -189,6 +189,8 @@ def game_main():
     #while game_paused runs the pause function
     game_active = 0 #game key: 0 = open, 1 = pause, 2 = end game, 3 = level 1,... 
     game_paused = False
+    Level = 0
+    obstacle_type = [[],['pumpkin', 'bat'],[1,2],[1,2]]
 
 
 
@@ -204,10 +206,26 @@ def game_main():
                 #screen.blit(title_men1,title_men1_rect)# Title
                 #screen.blit(title_men2, title_men2_rect)
                 #screen.blit(control_men, control_men_rect)# controls
-                click = play_button.draw(screen)
-                if click == True:
-                    game_active = True
-                pygame.display.flip()
+
+                if Level == 0:
+
+                    click = play_button.draw(screen)
+                    if click == True:
+                        game_active = True
+                        Level = 1
+                    pygame.display.flip()
+            
+                else:
+
+                    continue
+                    #display new level animation
+                    #make level start button
+            
+            #else:
+
+                #display pause background, score, and resume button
+            
+
 
         
 
@@ -229,11 +247,12 @@ def game_main():
             #Game Exit
             if event.type == pygame.QUIT:
 
-                #change the calue to False, exit the infinite loop
+                #change the value to False, exit the infinite loop
                 running = False
-                #sys.exit()
+                sys.exit()
 
 
+            
             #Active game commands
             if game_active == 1:
 
@@ -259,31 +278,31 @@ def game_main():
                         #game_paused = True
                         #game_active = (game_active + 1)%2  
 
-                                #Obstacle timer constructions
-                
+
+                #Obstacle timer constructions
                 if event.type == OBSTACLE_TIMER_1:
-                    obstacles.add(Class_fileGBA.Obstacle('pumpkin'))
+                    obstacles.add(Class_fileGBA.Obstacle(obstacle_type[Level][0]))
             
                 if event.type == OBSTACLE_TIMER_2:
-                    obstacles.add(Class_fileGBA.Obstacle('bat'))
-            
+                    obstacles.add(Class_fileGBA.Obstacle(obstacle_type[Level][1]))
+        
                 if event.type == OBSTACLE_TIMER_3:
                     retrievables.add(Class_fileGBA.Retrievable(random.choice(['book', 'book', 'book', 'cat'])))  
+                
 
-
-
+                #backdrop timers
+                if event.type == BACKGROUND_TIMER_1:
+                    Background_Buttons.add(Class_fileGBA.Backdrop_Button('house'))
+                
+                if event.type == BACKGROUND_TIMER_2:
+                    Background_Buttons.add(Class_fileGBA.Backdrop_Button('lamp'))
 
 
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                         player_yvel = 0
                 
-            else:
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        game_active = True
-                        #pump1_rect.left = 1200
-                        #bat_rect.left = 1300
+
 
                             
                 
@@ -293,12 +312,15 @@ def game_main():
             #display objects in order from back to front
             #display_score(score_text = )
             screen.blit(background_surface,(0,0))
-            screen.blit(houseOne_surface,houseOne_rect) #0, LENGTH - HOUSE HEIGHT
-            screen.blit(lamp1_surf,lamp1_rect)
-            screen.blit(lamp2_surf, lamp2_rect)
+            #screen.blit(houseOne_surface,houseOne_rect) #0, LENGTH - HOUSE HEIGHT
+            #screen.blit(lamp1_surf,lamp1_rect)
+            #screen.blit(lamp2_surf, lamp2_rect)
 
 
             #screen.blit(player_surf,player_rect)  
+            Background_Buttons.draw(screen)
+            Background_Buttons.update()
+
             player_2.draw(screen)
             player_2.update(minvel)
 
@@ -307,6 +329,8 @@ def game_main():
 
             retrievables.draw(screen)
             retrievables.update()
+
+
             
             
             pygame.draw.rect(screen,'Grey',score_rect,width = 2,border_radius=5)
@@ -334,20 +358,21 @@ def game_main():
                 pygame.time.wait(1000)
                 game_active = False
                 game_paused = True
+                Level += 1
                 #continue
 
             #animated portion of background
-            houseOne_rect.x -= .1*(player_xvel + minvel)
-            if houseOne_rect.right < -35:
-                houseOne_rect.left = 250 #loop the house position
+            #houseOne_rect.x -= .1*(player_xvel + minvel)
+            #if houseOne_rect.right < -35:
+             #   houseOne_rect.left = 250 #loop the house position
             
-            lamp1_rect.x -= .1*(7/5)*(player_xvel + minvel)
-            if lamp1_rect.right < -20:
-                lamp1_rect.left = 240
+            #lamp1_rect.x -= .1*(7/5)*(player_xvel + minvel)
+            #if lamp1_rect.right < -20:
+             #   lamp1_rect.left = 240
             
-            lamp2_rect.x -= .1*(7/5)*(player_xvel + minvel)
-            if lamp2_rect.right < -20:
-                lamp2_rect.left = 240
+            #lamp2_rect.x -= .1*(7/5)*(player_xvel + minvel)
+            #if lamp2_rect.right < -20:
+             #   lamp2_rect.left = 240
 
 
 
@@ -360,6 +385,11 @@ def game_main():
                 ret.xvel += minvel/500
             for obs in obstacles:
                 obs.xvel += minvel/500
+            for butt in Background_Buttons:
+                if butt.type == 'lamp':
+                    butt.xvel = (7/10)*(minvel)
+                elif butt.type == 'house':
+                    butt.xvel = .5*(minvel)
 
             #book score
             #if 

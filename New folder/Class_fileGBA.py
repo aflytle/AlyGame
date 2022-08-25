@@ -184,10 +184,7 @@ class Retrievable(pygame.sprite.Sprite):
         self.image = self.bonk_image
         self.xvel = .5
         self.yvel = -.5
-        self.collisions = False
-
-        
-        
+        self.collisions = False     
 
     def update(self):
         self.animation_state()
@@ -200,7 +197,7 @@ class Retrievable(pygame.sprite.Sprite):
 
 class Button():
     
-    def __init__(self, x, y, image, scale):
+    def __init__(self, x, y, image, scale): #add type
         width = image.get_width()
         height = image.get_height()
         self.x = x
@@ -209,7 +206,7 @@ class Button():
         self.rect = self.image.get_rect()
         self.rect.topleft = (x,y)
         self.clicked = False
-    
+
     def draw(self, surface):
         
         action = False
@@ -227,3 +224,83 @@ class Button():
         surface.blit(self.image, (self.x, self.y))
 
         return action
+
+
+
+class Backdrop_Button(pygame.sprite.Sprite):
+    
+    def __init__(self, type): #add type
+
+        super().__init__()
+
+        self.clicked = False
+        self.type = type
+
+        if type == 'lamp':
+            lamp1 = pygame.image.load('lamp1GBA.png').convert_alpha()
+            lamp2 = pygame.image.load('lamp2GBA.png').convert_alpha()
+            self.frames = [lamp1,lamp2]
+            y_pos = 160
+            self.xvel = 0
+            self.animation_inc = .04
+            self.bonk_image = pygame.image.load('lamp_bonkGBA.png').convert_alpha()
+        
+        elif type == 'house':
+            house1 = pygame.image.load('House1GBA.png').convert_alpha()
+            house2 = pygame.image.load('House2GBA.png').convert_alpha()
+            self.frames = [house1,house2]
+            y_pos = 160
+            self.xvel = 0
+            self.animation_inc = .04
+            self.bonk_image = pygame.image.load('House_bonkGBA.png').convert_alpha()
+        
+        self.animation_index = 0
+        self.image = self.frames[self.animation_index]
+        self.rect = self.image.get_rect(midbottom = (random.randint(250,300),y_pos))
+
+
+#    def draw(self, surface):
+#
+ #       pos = pygame.mouse.get_pos()
+#
+ #       if self.rect.collidepoint(pos):
+  #          if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+   #             self.clicked == True
+    #            self.image = self.bonk_image
+#
+#
+ #       if pygame.mouse.get_pressed()[0] == 0:
+  #          self.clicked = False
+#
+
+    def animation_state(self):
+        #self.bonk_image = pygame.image.load('Bonk.png').convert_alpha()
+        self.animation_index += self.animation_inc
+        pos = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clicked == True
+                self.image = self.bonk_image
+
+
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+        if self.animation_index >= len(self.frames):
+            self.animation_index = 0
+        if self.image == self.bonk_image:
+            self.image = self.bonk_image
+        else:    
+            self.image = self.frames[int(self.animation_index)]
+
+    def destroy(self):
+        if self.rect.right <= -10:
+            self.kill()
+    
+    def update(self):
+        self.animation_state()
+        #self.draw()
+        self.rect.x -= self.xvel
+        self.destroy()
+
