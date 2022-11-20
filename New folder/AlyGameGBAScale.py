@@ -24,7 +24,10 @@ import Class_fileGBA
 #define the main function
 def game_main():
 
-
+    
+    
+    
+    timer = 0
   
 
     #initialize the pygame module
@@ -131,7 +134,7 @@ def game_main():
 
     # Background
     #Background surface: size = 1152 x 648
-    background_surface = pygame.image.load('AlyGameBackGroundGBA.png').convert()#convert speeds this up
+    background_surface = [[],pygame.image.load('AlyGameBackGroundGBA.png').convert(), pygame.image.load('background.png').convert()]#convert speeds this up
 
     #House object for animation: size = 500 x 500
     #houseOne_surface = pygame.image.load('House1GBA.png').convert_alpha()#only convert background
@@ -190,9 +193,9 @@ def game_main():
     game_active = 0 #game key: 0 = open, 1 = pause, 2 = end game, 3 = level 1,... 
     game_paused = False
     Level = 0
-    obstacle_type = [[],['pumpkin', 'bat'],[1,2],[1,2]]
-
-
+    obstacle_type = [[],['pumpkin', 'bat'],['crawler','crow'],[1,2]]
+    background_type = [[],['house','lamp'],['portal','bushes'],[1,2]]
+    retrievable_type = [[],['book','cat'],['potion','gem'],[1,2]]
 
 
     # main loop
@@ -200,6 +203,8 @@ def game_main():
        
 
         if game_active == 0:
+
+            # create a check for the p button for pause
 
             if game_paused == False:
 
@@ -210,14 +215,32 @@ def game_main():
                 if Level == 0:
 
                     click = play_button.draw(screen)
-                    if click == True:
-                        game_active = True
-                        Level = 1
+                    #if click == True:
+                    #    game_active = True
+                    for event in pygame.event.get():
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_SPACE:
+                                timer = pygame.time.get_ticks()//1000
+                                Level = 1
+                                game_active = True
+
                     pygame.display.flip()
             
-                else:
+                elif Level == 1:
+                    
+                    click = play_button.draw(screen)
 
-                    continue
+                    for event in pygame.event.get():
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_SPACE:
+                                timer = pygame.time.get_ticks()//1000
+                                Level += 1
+                                game_active = True
+                    #if click == True:
+                    #    game_active = True
+                    #    Level += 1
+                    pygame.display.flip()
+
                     #display new level animation
                     #make level start button
             
@@ -287,15 +310,15 @@ def game_main():
                     obstacles.add(Class_fileGBA.Obstacle(obstacle_type[Level][1]))
         
                 if event.type == OBSTACLE_TIMER_3:
-                    retrievables.add(Class_fileGBA.Retrievable(random.choice(['book', 'book', 'book', 'cat'])))  
+                    retrievables.add(Class_fileGBA.Retrievable(random.choice(retrievable_type[Level])))  
                 
 
                 #backdrop timers
                 if event.type == BACKGROUND_TIMER_1:
-                    Background_Buttons.add(Class_fileGBA.Backdrop_Button('house'))
+                    Background_Buttons.add(Class_fileGBA.Backdrop_Button(background_type[Level][0]))
                 
                 if event.type == BACKGROUND_TIMER_2:
-                    Background_Buttons.add(Class_fileGBA.Backdrop_Button('lamp'))
+                    Background_Buttons.add(Class_fileGBA.Backdrop_Button(background_type[Level][1]))
 
 
                 if event.type == pygame.KEYUP:
@@ -311,7 +334,7 @@ def game_main():
         if game_active == 1:
             #display objects in order from back to front
             #display_score(score_text = )
-            screen.blit(background_surface,(0,0))
+            screen.blit(background_surface[Level],(0,0))
             #screen.blit(houseOne_surface,houseOne_rect) #0, LENGTH - HOUSE HEIGHT
             #screen.blit(lamp1_surf,lamp1_rect)
             #screen.blit(lamp2_surf, lamp2_rect)
@@ -340,25 +363,36 @@ def game_main():
             screen.blit(score_text, score_rect)
             
             #update scores
-            score_time = pygame.time.get_ticks()//1000
+            score_time = pygame.time.get_ticks()//1000 - timer
             #score_text = font.render(f"Books: {score_books}     Cats: {score_cats}     Time: {score_time}", False, 'Purple')
             #score_rect = score_text.get_rect(center = (576,100))
 
             
             # Level completion
             total_score = score_books*5 + score_cats*20 + score_time
+            #if total_score >= 10:
             if total_score >= 120:
                 #end of game animation:
-                pygame.time.wait(1000)
+                pygame.time.wait(500)
+
                 screen.blit(level_up_surf, level_up_rect)
-                pygame.time.wait(1000)
+                pygame.display.update()
+
+                pygame.time.wait(2000)
+
+                total_score = 0
+                score_books = 0
+                score_cats = 0
+                score_time = 0
+                for item in [Background_Buttons, obstacles, retrievables]:
+                    for sprt in item:
+                        sprt.kill()
+
+                pygame.time.wait(2000)
                 #score_text = font.render(f"Books = {score_books}     Cats = {score_cats}     Time = {score_time//1000}", False, 'Black')
                 #score_rect = score_text.get_rect(center = (120,100))
                 #screen.blit(score_text,score_rect)
-                pygame.time.wait(1000)
-                game_active = False
-                game_paused = True
-                Level += 1
+                game_active = 0
                 #continue
 
             #animated portion of background
@@ -386,9 +420,9 @@ def game_main():
             for obs in obstacles:
                 obs.xvel += minvel/500
             for butt in Background_Buttons:
-                if butt.type == 'lamp':
+                if (butt.type == 'lamp') or (butt.type == 'bush'):
                     butt.xvel = (7/10)*(minvel)
-                elif butt.type == 'house':
+                elif (butt.type == 'house') or (butt.type == 'portal'):
                     butt.xvel = .5*(minvel)
 
             #book score
@@ -413,9 +447,9 @@ def game_main():
 
             retrievals = pygame.sprite.spritecollide(player_2.sprite, retrievables, False)
             if retrievals != []:
-                if retrievals[0].type == 'book' and retrievals[0].collisions == True:
+                if (retrievals[0].type == 'book' or retrievals[0].type == 'potion') and retrievals[0].collisions == True:
                     score_books += 1
-                elif retrievals[0].type == 'cat' and retrievals[0].collisions == True:
+                elif (retrievals[0].type == 'cat' or retrievals[0].type ==  'gem') and retrievals[0].collisions == True:
                     score_cats += 1
                 retrievals[0].death_animation()
 

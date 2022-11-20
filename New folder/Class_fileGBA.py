@@ -93,7 +93,7 @@ class Obstacle(pygame.sprite.Sprite):
             self.xvel = 2
             self.animation_inc = .03
         
-        else:
+        elif type == 'bat':
             bat1 = pygame.image.load('Bat1GBA.png').convert_alpha()
             bat2 = pygame.image.load('Bat2GBA.png').convert_alpha()
             self.frames = [bat1,bat2]
@@ -102,10 +102,30 @@ class Obstacle(pygame.sprite.Sprite):
             self.xvel = 5
             self.animation_inc = .1
 
+        elif type == 'crow':
+            crow1 = pygame.image.load('crow 1.png').convert_alpha()
+            crow2 = pygame.image.load('crow 2.png').convert_alpha()
+            self.frames = [crow1,crow2]
+            y_pos = 30
+            self.yvel = 5*(.5-(random.random()))
+            self.xvel = 5
+            self.animation_inc = .1
+
+        elif type == "crawler":
+            crawler1 = pygame.image.load('crawler 1.png').convert_alpha()
+            crawler2 = pygame.image.load('crawler 2.png').convert_alpha()
+            self.frames = [crawler1,crawler2]
+            y_pos = 160
+            self.yvel = 0
+            self.xvel = 2
+            self.animation_inc = .03
+
+
 
         self.animation_index = 0
         self.image = self.frames[self.animation_index]
         self.rect = self.image.get_rect(midbottom = (random.randint(280,320),y_pos))
+    
     def animation_state(self):
         #self.bonk_image = pygame.image.load('Bonk.png').convert_alpha()
         self.animation_index += self.animation_inc
@@ -140,11 +160,13 @@ class Retrievable(pygame.sprite.Sprite):
         self.xvel = 0
         self.type = type
         self.collisions = True
+        self.frames = []
+
 
         if type == 'book':
             book1 = pygame.image.load('Book1GBA.png').convert_alpha()
             book2 = pygame.image.load('Book2GBA.png').convert_alpha()
-            self.frames = [book1,book2]
+            self.frames = [book1, book2]
             y_pos = random.randint(10,130)
             self.yvel = 0
             self.xvel = 2
@@ -154,13 +176,39 @@ class Retrievable(pygame.sprite.Sprite):
         elif type == 'cat':
             cat1 = pygame.image.load('cat1GBA.png').convert_alpha()
             cat2 = pygame.image.load('cat2GBA.png').convert_alpha()
-            self.frames = [cat1,cat2]
+            self.frames = [cat1, cat2]
             y_pos = 160
             self.yvel = 0
             self.xvel = 4
             self.animation_inc = .05
             self.bonk_image = pygame.image.load('cat_bonkGBA.png').convert_alpha()
 
+        elif type == 'gem':
+            gem1 = pygame.image.load('gem 1.png').convert_alpha()
+            gem2 = pygame.image.load('gem 2.png').convert_alpha()
+            gem3 = pygame.image.load('gem 3.png').convert_alpha()
+            
+            self.frames = [gem1, gem2, gem3]
+
+            y_pos = 160
+            self.yvel = 0
+            self.xvel = 3
+            self.animation_inc = .05
+            self.bonk_image = pygame.image.load('cat_bonkGBA.png').convert_alpha()
+
+        
+        elif type == 'potion':
+            potion1 = pygame.image.load('potion 1.png').convert_alpha()
+            potion2 = pygame.image.load('potion 2.png').convert_alpha()
+            potion3 = pygame.image.load('potion 3.png').convert_alpha()
+            
+            self.frames = [potion1, potion2, potion3]
+
+            y_pos = 160
+            self.yvel = 0
+            self.xvel = 2
+            self.animation_inc = .05
+            self.bonk_image = pygame.image.load('book_bonkGBA.png').convert_alpha()
 
         self.animation_index = 0
         self.image = self.frames[self.animation_index]
@@ -254,6 +302,24 @@ class Backdrop_Button(pygame.sprite.Sprite):
             self.animation_inc = .04
             self.bonk_image = pygame.image.load('House_bonkGBA.png').convert_alpha()
         
+        elif type == 'portal':
+            house1 = pygame.image.load('Portal.png').convert_alpha()
+            #house2 = pygame.image.load('House2GBA.png').convert_alpha()
+            self.frames = [house1,house1]
+            y_pos = 160
+            self.xvel = 0
+            self.animation_inc = .04
+            self.bonk_image = pygame.image.load('Portal.png').convert_alpha()
+
+        elif type == 'bushes':
+            bushes1 = pygame.image.load('Bushes.png').convert_alpha()
+            #lamp2 = pygame.image.load('lamp2GBA.png').convert_alpha()
+            self.frames = [bushes1,bushes1]
+            y_pos = 160
+            self.xvel = 0
+            self.animation_inc = .04
+            self.bonk_image = pygame.image.load('bushes.png').convert_alpha()
+
         self.animation_index = 0
         self.image = self.frames[self.animation_index]
         self.rect = self.image.get_rect(midbottom = (random.randint(250,300),y_pos))
