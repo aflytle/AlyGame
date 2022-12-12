@@ -306,7 +306,7 @@ class Backdrop_Button(pygame.sprite.Sprite):
             house1 = pygame.image.load('Portal.png').convert_alpha()
             #house2 = pygame.image.load('House2GBA.png').convert_alpha()
             self.frames = [house1,house1]
-            y_pos = 160
+            y_pos = 162
             self.xvel = 0
             self.animation_inc = .04
             self.bonk_image = pygame.image.load('Portal.png').convert_alpha()
@@ -315,10 +315,10 @@ class Backdrop_Button(pygame.sprite.Sprite):
             bushes1 = pygame.image.load('Bushes.png').convert_alpha()
             #lamp2 = pygame.image.load('lamp2GBA.png').convert_alpha()
             self.frames = [bushes1,bushes1]
-            y_pos = 160
+            y_pos = 158
             self.xvel = 0
             self.animation_inc = .04
-            self.bonk_image = pygame.image.load('bushes.png').convert_alpha()
+            self.bonk_image = pygame.image.load('bushes.png')#.convert_alpha()
 
         self.animation_index = 0
         self.image = self.frames[self.animation_index]

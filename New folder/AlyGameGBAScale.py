@@ -211,7 +211,7 @@ def game_main():
                 #screen.blit(title_men1,title_men1_rect)# Title
                 #screen.blit(title_men2, title_men2_rect)
                 #screen.blit(control_men, control_men_rect)# controls
-
+ 
                 if Level == 0:
 
                     click = play_button.draw(screen)
@@ -420,7 +420,7 @@ def game_main():
             for obs in obstacles:
                 obs.xvel += minvel/500
             for butt in Background_Buttons:
-                if (butt.type == 'lamp') or (butt.type == 'bush'):
+                if (butt.type == 'lamp') or (butt.type == 'bushes'):
                     butt.xvel = (7/10)*(minvel)
                 elif (butt.type == 'house') or (butt.type == 'portal'):
                     butt.xvel = .5*(minvel)
